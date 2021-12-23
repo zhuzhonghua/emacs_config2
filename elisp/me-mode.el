@@ -297,8 +297,7 @@
 			(progn
 				(move-end-of-line nil)
 				(newline)))
-	(yank)
-	(me-advice-clear-everything))
+	(yank))
 
 (defun me-esc-bind ()
 	"when press esc"
