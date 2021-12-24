@@ -57,6 +57,7 @@
 ;; 设置C++
 (setq c-default-style "gnu")
 (c-set-offset 'substatement-open 0)
+(c-set-offset 'access-label -2)
 
 (require 'me-mode)
 (global-set-key [escape] 'me-mode-enable)

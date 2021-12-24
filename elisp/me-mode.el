@@ -29,6 +29,9 @@
 (defvar-local me-visual-end-pos nil
 	"end pos of the visual line")
 
+(defvar-local me-paste-new-line nil
+	"open new line and paste")
+
 (defun me-test-keys ()
 	(message "keys %s" me-pre-keystrokes))
 
@@ -44,7 +47,8 @@
 	(setq me-line-selection-overlay nil)
 	(setq me-visual-begin-pos nil)
 	(setq me-visual-end-pos nil)
-	(setq mark-active nil))
+	(setq mark-active nil)
+	(setq me-paste-new-line nil))
 
 (advice-add #'keyboard-quit :before #'me-advice-clear-everything)
 
@@ -285,18 +289,20 @@
 					 (me-advice-clear-everything)))
 				((eq 'y (car me-pre-keystrokes)) ;; yy action dont clear keystrokes
 				 (push 'y me-pre-keystrokes)
-				 (kill-ring-save (line-beginning-position) (line-end-position)))
+				 (kill-ring-save (line-beginning-position) (line-end-position))
+				 (setq me-paste-new-line t))
 				(t ;; for yy
  				 (push 'y me-pre-keystrokes))))
 
 (defun me-p-bind ()
 	"when press p"
 	(interactive)
-	(if (and (eq 'y (car me-pre-keystrokes))
-					 (eq 'y (cadr me-pre-keystrokes)))
+	(message "new paste line %s" me-paste-new-line)
+	(if me-paste-new-line
 			(progn
 				(move-end-of-line nil)
-				(newline)))
+				(newline)
+				(move-beginning-of-line nil)))
 	(yank))
 
 (defun me-esc-bind ()
@@ -326,17 +332,18 @@
 	(interactive)
 	(if (null (car me-pre-keystrokes)) ;; no pre keys
 			(cond	(mark-active ;; by set-mark-command
-						 (kill-region (region-beginning) (region-end)))
+						 (kill-region (region-beginning) (region-end))
+						 (setq me-paste-new-line nil))
 						(me-line-selection-overlay ;; by big V
-						 (progn
-							 (kill-region me-visual-begin-pos me-visual-end-pos)
-							 (me-advice-clear-everything)))
+						 (kill-region me-visual-begin-pos me-visual-end-pos)
+						 (me-advice-clear-everything))
 						(t
 						 (push 'd me-pre-keystrokes)))
 		(if (eq 'd (car me-pre-keystrokes)) ;; double d
 				(progn
 					(me-trigger-dd)
-					(me-advice-clear-everything)))))
+					(message "new paste line set t")
+					(setq me-paste-new-line t)))))
 
 (defun me-v-bind ()
 	"when press v"
@@ -365,6 +372,17 @@
 				(newline)
 				(me-previous-line-insert))))
 
+(defun me---bind ()
+	"when press -"
+	(interactive)
+	(other-window 1))
+
+(defun me-r-bind ()
+	"when press r"
+	(interactive)
+	(me-x-bind)
+	(me-mode-disable))
+
 ;; implemented command
 (define-key me-local-mode-map [escape] 'me-esc-bind)
 (define-key me-local-mode-map (kbd "0") 'me-move-beginning)
@@ -386,6 +404,7 @@
 (define-key me-local-mode-map (kbd "O") 'me-previous-line-insert)
 (define-key me-local-mode-map (kbd "p") 'me-p-bind)
 (define-key me-local-mode-map (kbd "P") 'me-upper-p-operation)
+(define-key me-local-mode-map (kbd "r") 'me-r-bind)
 (define-key me-local-mode-map (kbd "v") 'me-v-bind)
 (define-key me-local-mode-map (kbd "V") 'me-make-line-visual-selection)
 (define-key me-local-mode-map (kbd "w") 'me-w-bind)
@@ -399,6 +418,7 @@
 (define-key me-local-mode-map (kbd "(") 'me-left-bracket-bind)
 (define-key me-local-mode-map (kbd ")") 'me-right-bracket-bind)
 (define-key me-local-mode-map (kbd "RET") 'me-return-bind)
+(define-key me-local-mode-map (kbd "-") 'me---bind)
 
 ;; ignore command
 (define-key me-local-mode-map (kbd "4") 'me-dummy-bind)
@@ -426,7 +446,6 @@
 (define-key me-local-mode-map (kbd "N") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "q") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "Q") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "r") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "R") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "s") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "S") 'me-dummy-bind)
@@ -451,7 +470,6 @@
 (define-key me-local-mode-map (kbd "{") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "]") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "}") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "-") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "_") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "+") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "=") 'me-dummy-bind)
