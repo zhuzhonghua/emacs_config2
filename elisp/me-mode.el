@@ -50,7 +50,7 @@
 	(setq mark-active nil)
 	(setq me-paste-new-line nil))
 
-(advice-add #'keyboard-quit :before #'me-advice-clear-everything)
+
 
 (defun me-recalc-visual-pos-next-line ()
 	"only under visual line selection"
@@ -90,9 +90,17 @@
 	(if me-line-selection-overlay
 			(indent-region me-visual-begin-pos me-visual-end-pos)))
 
-(advice-add #'next-line :after #'me-advice-next-line)
-(advice-add #'previous-line :after #'me-advice-previous-line)
-(advice-add #'indent-for-tab-command :after #'me-advice-tab)
+(defun me-add-all-advice ()
+	(advice-add #'keyboard-quit :before #'me-advice-clear-everything)
+	(advice-add #'next-line :after #'me-advice-next-line)
+	(advice-add #'previous-line :after #'me-advice-previous-line)
+	(advice-add #'indent-for-tab-command :after #'me-advice-tab))
+
+(defun me-remove-all-advice ()
+	(advice-remove #'keyboard-quit  #'me-advice-clear-everything)
+	(advice-remove #'next-line  #'me-advice-next-line)
+	(advice-remove #'previous-line  #'me-advice-previous-line)
+	(advice-remove #'indent-for-tab-command  #'me-advice-tab))
 
 (defmacro me-push-keystrokes (k)
 	"the macro save keystrokes to later action"
@@ -250,7 +258,8 @@
 	"Disable my evil mode on special occation"
 	(interactive)
 	(me-local-mode -1)
-	(me-advice-clear-everything))
+	(me-advice-clear-everything)
+	(me-remove-all-advice))
 
 (defun me-mode-enable ()
 	"auto enable my evil mode when evil mode"
@@ -258,7 +267,8 @@
 	(if (and (not (bound-and-true-p me-local-mode))
 					 (/= (point) (line-beginning-position)))
 			(backward-char))
-	(me-local-mode 1))
+	(me-local-mode 1)
+	(me-add-all-advice))
 
 (defun define-me-key-push (kbd-k k)
 	(define-key me-local-mode-map (kbd kbd-k) (me-push-keystrokes k)))
