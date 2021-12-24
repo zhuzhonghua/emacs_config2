@@ -394,6 +394,15 @@
 	(me-x-bind)
 	(me-mode-disable))
 
+(defun me-backspace-bind ()
+	"when press backspace"
+	(interactive)
+	(while (or (eq ?  (char-before (point)))
+						 (eq ?\t (char-before (point)))
+						 (eq ?\r (char-before (point)))
+						 (eq ?\n (char-before (point))))
+		(backward-delete-char 1 nil)))
+
 ;; implemented command
 (define-key me-local-mode-map [escape] 'me-esc-bind)
 (define-key me-local-mode-map (kbd "0") 'me-move-beginning)
@@ -430,6 +439,7 @@
 (define-key me-local-mode-map (kbd ")") 'me-right-bracket-bind)
 (define-key me-local-mode-map (kbd "RET") 'me-return-bind)
 (define-key me-local-mode-map (kbd "-") 'me---bind)
+(define-key me-local-mode-map (kbd "DEL") 'me-backspace-bind)
 
 ;; ignore command
 (define-key me-local-mode-map (kbd "4") 'me-dummy-bind)
@@ -467,7 +477,6 @@
 (define-key me-local-mode-map (kbd "Y") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "z") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "Z") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "DEL") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "SPC") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd ";") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd ":") 'me-dummy-bind)
