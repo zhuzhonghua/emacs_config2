@@ -202,12 +202,12 @@
 	(move-end-of-line nil)
 	(me-mode-disable))
 
-(defun me-next-line-insert ()
+(defun me-o-bind ()
 	(interactive)
 	(move-end-of-line nil)
 	(newline)
-	(me-mode-disable)
-	(indent-for-tab-command))
+	(indent-for-tab-command)
+	(me-mode-disable))
 
 (defun me-forward-char-insert ()
 	(interactive)
@@ -226,11 +226,11 @@
 			(move-end-of-line nil)
 			(newline))))
 
-(defun me-previous-line-insert ()
+(defun me-O-bind ()
 	(interactive)
 	(me-move-previous-line-new-line)
-	(me-mode-disable)
-	(indent-for-tab-command))
+	(indent-for-tab-command)
+	(me-mode-disable))
 
 (defun me-kill-whole-line (&optional arg)
 	(interactive)
@@ -370,7 +370,8 @@
 					 (equal ?\{ (char-before (point))))
 			(progn
 				(newline)
-				(me-previous-line-insert))))
+				(indent-for-tab-command)
+				(me-O-bind))))
 
 (defun me---bind ()
 	"when press -"
@@ -400,8 +401,8 @@
 (define-key me-local-mode-map (kbd "j") 'next-line)
 (define-key me-local-mode-map (kbd "k") 'previous-line)
 (define-key me-local-mode-map (kbd "l") 'forward-char)
-(define-key me-local-mode-map (kbd "o") 'me-next-line-insert)
-(define-key me-local-mode-map (kbd "O") 'me-previous-line-insert)
+(define-key me-local-mode-map (kbd "o") 'me-o-bind)
+(define-key me-local-mode-map (kbd "O") 'me-O-bind)
 (define-key me-local-mode-map (kbd "p") 'me-p-bind)
 (define-key me-local-mode-map (kbd "P") 'me-upper-p-operation)
 (define-key me-local-mode-map (kbd "r") 'me-r-bind)
