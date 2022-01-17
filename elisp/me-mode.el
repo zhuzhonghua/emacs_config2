@@ -198,12 +198,14 @@
 (defun me-2-bind ()
 	"bind 2 to c-x 2"
 	(interactive)
-	(split-window-below))
+	(split-window-below)
+	(other-window 1))
 
 (defun me-3-bind ()
 	"bind 3 to c-x 3"
 	(interactive)
-	(split-window-right))
+	(split-window-right)
+	(other-window 1))
 
 (defun me-line-end-insert ()
 	(interactive)
@@ -353,6 +355,7 @@
 				(progn
 					(me-trigger-dd)
 					(message "new paste line set t")
+					(setq me-pre-keystrokes '())	
 					(setq me-paste-new-line t)))))
 
 (defun me-v-bind ()
