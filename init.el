@@ -67,6 +67,8 @@
 (setq company-backends (list 'company-projectile-rg))
 (global-set-key (kbd "C-=") 'global-company-mode)
 
+;; bind f10 to find word
+(global-set-key (kbd "<f10>") '(lambda () (interactive) (cpr-find (thing-at-point 'word' 'no-properties))))
 
 
 
