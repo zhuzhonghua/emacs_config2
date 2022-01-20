@@ -207,6 +207,11 @@
 	(split-window-right)
 	(other-window 1))
 
+(defun me-9-bind ()
+	"bind 9 to c-x 0"
+	(interactive)
+	(delete-window))
+
 (defun me-line-end-insert ()
 	(interactive)
 	(move-end-of-line nil)
@@ -412,6 +417,7 @@
 (define-key me-local-mode-map (kbd "1") 'me-1-bind)
 (define-key me-local-mode-map (kbd "2") 'me-2-bind)
 (define-key me-local-mode-map (kbd "3") 'me-3-bind)
+(define-key me-local-mode-map (kbd "9") 'me-9-bind)
 (define-key me-local-mode-map (kbd "a") 'me-forward-char-insert)
 (define-key me-local-mode-map (kbd "A") 'me-line-end-insert)
 (define-key me-local-mode-map (kbd "b") 'backward-word)
@@ -450,7 +456,6 @@
 (define-key me-local-mode-map (kbd "6") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "7") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "8") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "9") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "B") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "C") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "D") 'me-dummy-bind)
