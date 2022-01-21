@@ -212,6 +212,11 @@
 	(interactive)
 	(delete-window))
 
+(defun me-ctrl-9-bind ()
+	"bind ctrl-9 to c-x k"
+	(interactive)
+	(kill-buffer))
+
 (defun me-line-end-insert ()
 	(interactive)
 	(move-end-of-line nil)
@@ -418,6 +423,7 @@
 (define-key me-local-mode-map (kbd "2") 'me-2-bind)
 (define-key me-local-mode-map (kbd "3") 'me-3-bind)
 (define-key me-local-mode-map (kbd "9") 'me-9-bind)
+(define-key me-local-mode-map (kbd "C-9") 'me-ctrl-9-bind)
 (define-key me-local-mode-map (kbd "a") 'me-forward-char-insert)
 (define-key me-local-mode-map (kbd "A") 'me-line-end-insert)
 (define-key me-local-mode-map (kbd "b") 'backward-word)
