@@ -68,8 +68,8 @@
 (global-set-key (kbd "C-=") 'global-company-mode)
 
 ;; bind f10 to find word
-(global-set-key (kbd "<f10>") '(lambda () (interactive) (cpr-find (thing-at-point 'word' 'no-properties))))
-(global-set-key (kbd "C-<f10>") '(lambda () (interactive) (swiper (thing-at-point 'word' 'no-properties))))
+(global-set-key (kbd "<f10>") '(lambda () (interactive) (cpr-find (thing-at-point 'symbol' 'no-properties))))
+(global-set-key (kbd "C-<f10>") '(lambda () (interactive) (swiper (thing-at-point 'symbol' 'no-properties))))
 
 
 
