@@ -417,7 +417,7 @@
 		(backward-delete-char 1 nil)))
 
 ;; implemented command
-(define-key me-local-mode-map [escape] 'me-esc-bind)
+(define-key me-local-mode-map [escape] 'keyboard-quit)
 (define-key me-local-mode-map (kbd "0") 'me-move-beginning)
 (define-key me-local-mode-map (kbd "1") 'me-1-bind)
 (define-key me-local-mode-map (kbd "2") 'me-2-bind)
@@ -455,6 +455,7 @@
 (define-key me-local-mode-map (kbd "RET") 'me-return-bind)
 (define-key me-local-mode-map (kbd "-") 'me---bind)
 (define-key me-local-mode-map (kbd "DEL") 'me-backspace-bind)
+(define-key me-local-mode-map (kbd ";") 'recenter-top-bottom)
 
 ;; ignore command
 (define-key me-local-mode-map (kbd "4") 'me-dummy-bind)
@@ -492,7 +493,6 @@
 (define-key me-local-mode-map (kbd "z") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "Z") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "SPC") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd ";") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd ":") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "/") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "?") 'me-dummy-bind)
