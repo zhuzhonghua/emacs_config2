@@ -418,6 +418,7 @@
 
 ;; implemented command
 (define-key me-local-mode-map [escape] 'keyboard-quit)
+(define-key me-local-mode-map (kbd "ESC") 'keyboard-quit)
 (define-key me-local-mode-map (kbd "0") 'me-move-beginning)
 (define-key me-local-mode-map (kbd "1") 'me-1-bind)
 (define-key me-local-mode-map (kbd "2") 'me-2-bind)
