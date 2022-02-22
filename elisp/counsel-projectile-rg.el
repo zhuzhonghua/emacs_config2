@@ -1,12 +1,4 @@
 
-;;(defun cpr-find ()
-;;	"run counsel-rg under projectile"
-;;	(interactive)
-;;	(let ((project-root (projectile-acquire-root)))
-;;		(counsel-rg (input)
-;;								project-root)))
-;;
-
 (defun cpr-find (&optional initial-input)
   "copy from counsel-rg"
   (interactive)
