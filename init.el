@@ -18,7 +18,14 @@
 (global-set-key (kbd "C-<tab>")
 		'(lambda ()
 		   (interactive)
-		   (switch-to-buffer nil)))
+			 ;; skip *Help*
+			 (set-frame-parameter nil
+														'buffer-predicate
+														'(lambda (buffer)
+															 (if (string-match "*Help*" (buffer-name buffer))
+																	 nil
+																 t)))
+		   (switch-to-buffer (other-buffer))))
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
@@ -63,6 +70,7 @@
 (global-set-key [escape] 'me-mode-enable)
 
 (require 'counsel-projectile-rg)
+(require 'counsel-navigate)
 (require 'company-projectile-rg)
 (setq company-backends (list 'company-projectile-rg))
 (global-set-key (kbd "C-=") 'global-company-mode)
