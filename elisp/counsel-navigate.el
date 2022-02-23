@@ -2,16 +2,28 @@
 (defvar counsel-nav-marker-list nil
 	"list of stored marker")
 
+(defvar counsel-nav-marker-list-max 10
+	"max length list of stored marker")
+
 (defvar counsel-nav-marker-index 0
 	"convinent to switch left and right")
 
 (defun counsel-nav-push-mark ()
 	"push a marker to list"
 	(interactive)
-	(setq m (make-marker))
-	(set-marker m (point) (current-buffer))
-	(setq counsel-nav-marker-list (cons m counsel-nav-marker-list))
-	(message "nav mark len %d" (length counsel-nav-marker-list)))
+	(unless (and counsel-nav-marker-list
+							 (eq (marker-buffer (car counsel-nav-marker-list)) (current-buffer))
+							 (< (abs (-
+												(line-number-at-pos (marker-position (car counsel-nav-marker-list)))
+												(line-number-at-pos (point))))
+									20))
+		(setq history-delete-duplicates nil)
+		(setq m (make-marker))
+		(set-marker m (point) (current-buffer))
+		(setq counsel-nav-marker-list
+					(seq-take (cons m counsel-nav-marker-list) counsel-nav-marker-list-max))
+		(setq counsel-nav-marker-index (1- (length counsel-nav-marker-list)))
+		(message "nav mark len %d" (length counsel-nav-marker-list))))
 
 (defun counsel-nav-goto-marker ()
 	"goto the index marker"
