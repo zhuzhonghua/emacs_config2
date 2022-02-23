@@ -67,7 +67,10 @@
 (c-set-offset 'access-label -2)
 
 (require 'me-mode)
-(global-set-key [escape] 'me-mode-enable)
+(global-set-key [escape] '(lambda ()
+														(interactive)
+														(me-mode-enable)
+														(keyboard-quit)))
 
 (require 'counsel-projectile-rg)
 (require 'counsel-navigate)
