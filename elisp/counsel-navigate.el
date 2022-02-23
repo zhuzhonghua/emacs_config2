@@ -1,4 +1,7 @@
 
+(defconst counsel-nav-marker-near 10
+	"near to last marker, cover it")
+
 (defvar counsel-nav-marker-list nil
 	"list of stored marker")
 
@@ -8,15 +11,22 @@
 (defvar counsel-nav-marker-index 0
 	"convinent to switch left and right")
 
+(defun counsel-nav-marker-check-near (markers)
+	"check if point and buffer near in marker list"
+	(when markers
+		(let ((near-marker (seq-find #'(lambda (marker)
+																		 (and (eq (marker-buffer marker) (current-buffer))
+																					(< (abs (-
+																									 (line-number-at-pos (marker-position marker))
+																									 (line-number-at-pos (point))))
+																						 counsel-nav-marker-near)))
+																 markers)))
+			(and near-marker (set-marker near-marker (point))))))
+
 (defun counsel-nav-push-mark ()
 	"push a marker to list"
 	(interactive)
-	(unless (and counsel-nav-marker-list
-							 (eq (marker-buffer (car counsel-nav-marker-list)) (current-buffer))
-							 (< (abs (-
-												(line-number-at-pos (marker-position (car counsel-nav-marker-list)))
-												(line-number-at-pos (point))))
-									20))
+	(unless (counsel-nav-marker-check-near counsel-nav-marker-list)
 		(setq history-delete-duplicates nil)
 		(setq m (make-marker))
 		(set-marker m (point) (current-buffer))
@@ -62,11 +72,17 @@
 		(mapcar (lambda (marker)
 							(let ((buf (marker-buffer marker))
 										(pos (marker-position marker)))
-								(propertize (format "%s:%d"
-																		(buffer-name buf)
-																		pos)
-														'point pos
-														'buffer buf)))
+								(with-current-buffer buf
+									(goto-char pos)
+									(let ((linum (line-number-at-pos))
+                        (line  (buffer-substring
+                                (line-beginning-position) (line-end-position))))
+										(propertize (format "%s:%d %s"
+																				(buffer-name buf)
+																				linum
+																				line)
+																'point pos
+																'buffer buf)))))
 						marks)))
 
 (defun counsel-nav-mark-ring ()
@@ -97,9 +113,16 @@
 								:caller 'counsel-nav-mark-ring)
 		(message "Mark ring is empty")))
 
-(add-hook 'xref-find-definitions #'counsel-nav-push-mark nil t)
-(add-hook 'ivy-done #'counsel-nav-push-mark nil t)
-(add-hook 'isearch-exit #'counsel-nav-push-mark nil t)
+;;(advice-add #'xref-find-definitions :after #'(lambda ()
+;;																							 (save-excursion
+;;																								 (counsel-nav-push-mark))
+;;																							 (counsel-nav-push-mark) )
+;;(add-hook 'ivy-done #'counsel-nav-push-mark nil t)
+(advice-add #'isearch-exit :after #'(lambda ()
+																			(save-excursion
+																				(goto-char isearch-opoint)
+																				(counsel-nav-push-mark))
+																			(counsel-nav-push-mark)))
 
 (global-set-key (kbd "M-,") 'counsel-nav-mark-ring)
 (global-set-key (kbd "<M-left>") 'counsel-nav-pre-marker)

@@ -27,6 +27,7 @@
 																 t)))
 		   (switch-to-buffer (other-buffer))))
 
+(global-set-key (kbd "C-x e") 'eval-last-sexp)
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
 (defun smooth-scroll (increment)
