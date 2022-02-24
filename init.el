@@ -46,6 +46,8 @@
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t)
+(define-key ivy-occur-mode-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key (kbd "C-<f12>") 'counsel-imenu)
 (global-set-key (kbd "<f11>") 'ivy-switch-buffer)
 

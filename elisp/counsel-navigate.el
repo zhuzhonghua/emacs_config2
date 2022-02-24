@@ -99,8 +99,10 @@
 																			(buffer (get-text-property 0 'buffer current-cand))
 																			(point (get-text-property 0 'point current-cand)))
 																 (with-ivy-window
+																	 (counsel--mark-ring-delete-highlight) 
 																	 (counsel-nav-switch buffer
-																											 point))))
+																											 point)
+																	 (counsel--mark-ring-add-highlight))))
 								:action (lambda (cand)
 													(let ((buffer (get-text-property 0 'buffer cand))
 																(point (get-text-property 0 'point cand)))
@@ -109,7 +111,8 @@
 																										 point))))
 								:unwind #'(lambda ()
 														(counsel-nav-switch counsel-nav-mark-ring-calling-buffer
-																								counsel-nav-mark-ring-calling-point))
+																								counsel-nav-mark-ring-calling-point)
+														(counsel--mark-ring-delete-highlight))
 								:caller 'counsel-nav-mark-ring)
 		(message "Mark ring is empty")))
 
@@ -117,12 +120,14 @@
 ;;																							 (save-excursion
 ;;																								 (counsel-nav-push-mark))
 ;;																							 (counsel-nav-push-mark) )
-;;(add-hook 'ivy-done #'counsel-nav-push-mark nil t)
-(advice-add #'isearch-exit :after #'(lambda ()
-																			(save-excursion
-																				(goto-char isearch-opoint)
-																				(counsel-nav-push-mark))
-																			(counsel-nav-push-mark)))
+
+(defun counsel-nav-minibuffer-push-mark (&rest dummy)
+	"before and after minibuffer push mark"
+	(counsel-nav-push-mark))
+
+;;(add-hook 'minibuffer-setup-hook #'counsel-nav-minibuffer-push-mark)
+(advice-add #'read-from-minibuffer :before #'counsel-nav-minibuffer-push-mark)
+(advice-add #'exit-recursive-edit :after #'counsel-nav-minibuffer-push-mark)
 
 (global-set-key (kbd "M-,") 'counsel-nav-mark-ring)
 (global-set-key (kbd "<M-left>") 'counsel-nav-pre-marker)
