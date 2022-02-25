@@ -135,8 +135,7 @@
 			(move-overlay me-line-selection-overlay me-visual-begin-pos me-visual-end-pos)
 		(setq me-line-selection-overlay
 					(make-overlay me-visual-begin-pos me-visual-end-pos)))
-	(overlay-put me-line-selection-overlay 'face 'region)
-	(me-setmark-line-visual-selection))
+	(overlay-put me-line-selection-overlay 'face 'region))
 
 (defun me-trigger-operation (arg)
 	"trigger multi key operation"

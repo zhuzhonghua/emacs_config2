@@ -1,5 +1,5 @@
 
-(defconst counsel-nav-marker-near 10
+(defconst counsel-nav-marker-near 5
 	"near to last marker, cover it")
 
 (defvar counsel-nav-marker-list nil
@@ -23,16 +23,32 @@
 																 markers)))
 			(and near-marker (set-marker near-marker (point))))))
 
+(defun counsel-nav-marker-remove-near (buffer point)
+	"remove marker near buffer and point"
+	(when counsel-nav-marker-list
+		(let ((linum (line-number-at-pos point)))
+			(setq counsel-nav-marker-list
+						(seq-drop-while (lambda (marker)
+															(and (eq (marker-buffer marker) buffer)
+																	 (< (abs (-
+																						(line-number-at-pos (marker-position marker))
+																						linum))
+																			counsel-nav-marker-near)))
+														counsel-nav-marker-list)))))
+
 (defun counsel-nav-push-mark ()
 	"push a marker to list"
 	(interactive)
-	(unless (counsel-nav-marker-check-near counsel-nav-marker-list)
-		(setq history-delete-duplicates nil)
-		(setq m (make-marker))
-		(set-marker m (point) (current-buffer))
-		(setq counsel-nav-marker-list
-					(seq-take (delete-dups (cons m counsel-nav-marker-list)) counsel-nav-marker-list-max))
-		(setq counsel-nav-marker-index (1- (length counsel-nav-marker-list)))))
+	(counsel-nav-marker-remove-near (current-buffer) (point))
+	(setq history-delete-duplicates nil)
+	(setq m (make-marker))
+	(set-marker m (point) (current-buffer))
+	(setq counsel-nav-marker-list
+				(seq-take (cons m counsel-nav-marker-list) counsel-nav-marker-list-max))
+	(setq counsel-nav-marker-index (1- (length counsel-nav-marker-list)))
+	(message "push one mark buffer name %S line %S"
+					 (buffer-name (marker-buffer (car counsel-nav-marker-list)))
+					 (line-number-at-pos (marker-position (car counsel-nav-marker-list)))))
 
 (defun counsel-nav-goto-marker ()
 	"goto the index marker"
@@ -91,6 +107,7 @@
 	;; remember the buffer and point
 	(setq counsel-nav-mark-ring-calling-buffer (current-buffer))
 	(setq counsel-nav-mark-ring-calling-point (point))
+	(counsel-nav-push-mark)
 	(if counsel-nav-marker-list
 			(ivy-read "Marks:" (counsel-nav-mark-get-candidates counsel-nav-marker-list)
 								:require-match t
@@ -116,18 +133,13 @@
 								:caller 'counsel-nav-mark-ring)
 		(message "Mark ring is empty")))
 
-;;(advice-add #'xref-find-definitions :after #'(lambda ()
-;;																							 (save-excursion
-;;																								 (counsel-nav-push-mark))
-;;																							 (counsel-nav-push-mark) )
-
-(defun counsel-nav-minibuffer-push-mark (&rest dummy)
-	"before and after minibuffer push mark"
-	(counsel-nav-push-mark))
-
-;;(add-hook 'minibuffer-setup-hook #'counsel-nav-minibuffer-push-mark)
-(advice-add #'read-from-minibuffer :before #'counsel-nav-minibuffer-push-mark)
-(advice-add #'exit-recursive-edit :after #'counsel-nav-minibuffer-push-mark)
+;;(defun counsel-nav-minibuffer-push-mark (&rest dummy)
+;;	"before and after minibuffer push mark"
+;;	(counsel-nav-push-mark))
+;;
+;;;;(add-hook 'minibuffer-setup-hook #'counsel-nav-minibuffer-push-mark)
+;;(advice-add #'read-from-minibuffer :before #'counsel-nav-minibuffer-push-mark)
+;;(advice-add #'exit-recursive-edit :after #'counsel-nav-minibuffer-push-mark)
 
 (global-set-key (kbd "M-,") 'counsel-nav-mark-ring)
 (global-set-key (kbd "<M-left>") 'counsel-nav-pre-marker)

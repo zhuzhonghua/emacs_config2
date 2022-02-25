@@ -76,7 +76,6 @@
 														(keyboard-quit)))
 
 (require 'counsel-projectile-rg)
-(require 'counsel-navigate)
 (require 'company-projectile-rg)
 (setq company-backends (list 'company-projectile-rg))
 (global-set-key (kbd "C-=") 'global-company-mode)
@@ -85,5 +84,8 @@
 (global-set-key (kbd "<f10>") '(lambda () (interactive) (cpr-find (thing-at-point 'symbol' 'no-properties))))
 (global-set-key (kbd "C-<f10>") '(lambda () (interactive) (swiper (thing-at-point 'symbol' 'no-properties))))
 
+(require 'counsel-navigate)
+(advice-add #'cpr-find :before #'(lambda (&rest dummy)
+																	 (counsel-nav-push-mark)))
 
 
