@@ -5,36 +5,40 @@
 (defvar counsel-nav-marker-list nil
 	"list of stored marker")
 
-(defvar counsel-nav-marker-list-max 10
+(defvar counsel-nav-marker-list-max 3
 	"max length list of stored marker")
 
 (defvar counsel-nav-marker-index 0
 	"convinent to switch left and right")
 
-(defun counsel-nav-marker-check-near (markers)
-	"check if point and buffer near in marker list"
-	(when markers
-		(let ((near-marker (seq-find #'(lambda (marker)
-																		 (and (eq (marker-buffer marker) (current-buffer))
-																					(< (abs (-
-																									 (line-number-at-pos (marker-position marker))
-																									 (line-number-at-pos (point))))
-																						 counsel-nav-marker-near)))
-																 markers)))
-			(and near-marker (set-marker near-marker (point))))))
-
 (defun counsel-nav-marker-remove-near (buffer point)
 	"remove marker near buffer and point"
 	(when counsel-nav-marker-list
-		(let ((linum (line-number-at-pos point)))
-			(setq counsel-nav-marker-list
-						(seq-drop-while (lambda (marker)
-															(and (eq (marker-buffer marker) buffer)
+		(setq counsel-nav-marker-list
+					(seq-drop-while (lambda (marker)
+														(and (eq (marker-buffer marker) buffer)
+																 (with-current-buffer buffer	 
 																	 (< (abs (-
 																						(line-number-at-pos (marker-position marker))
-																						linum))
-																			counsel-nav-marker-near)))
-														counsel-nav-marker-list)))))
+																						(line-number-at-pos point)))
+																			counsel-nav-marker-near))))
+													counsel-nav-marker-list))))
+
+(defun counsel-nav-show-markers ()
+	"show markers for test"
+	(interactive)
+	(dolist (elt counsel-nav-marker-list)
+		(with-current-buffer (marker-buffer elt)
+			(message "marker buffer %S linum %S"
+							 (buffer-name (marker-buffer elt))
+							 (line-number-at-pos (marker-position elt))))))
+
+(defun counsel-nav-clear-mark ()
+	"clear the mark for test"
+	(interactive)
+	(setq counsel-nav-marker-list nil)
+	(setq counsel-nav-marker-index 0)
+	(message "clear the counsel-nav-marker-list"))
 
 (defun counsel-nav-push-mark ()
 	"push a marker to list"
@@ -45,31 +49,44 @@
 	(set-marker m (point) (current-buffer))
 	(setq counsel-nav-marker-list
 				(seq-take (cons m counsel-nav-marker-list) counsel-nav-marker-list-max))
-	(setq counsel-nav-marker-index (1- (length counsel-nav-marker-list)))
+	(setq counsel-nav-marker-index 0)
 	(message "push one mark buffer name %S line %S"
-					 (buffer-name (marker-buffer (car counsel-nav-marker-list)))
-					 (line-number-at-pos (marker-position (car counsel-nav-marker-list)))))
+					 (buffer-name (marker-buffer m))
+					 (line-number-at-pos (marker-position m)))
+	;;(counsel-nav-show-markers)
+	)
 
 (defun counsel-nav-goto-marker ()
 	"goto the index marker"
 	(interactive)
+	;;(message "marker index %S" counsel-nav-marker-index)
+	;;(counsel-nav-show-markers)
 	(let ((cur-marker (nth counsel-nav-marker-index counsel-nav-marker-list)))
 		(switch-to-buffer (marker-buffer cur-marker))
-		(goto-char (marker-position cur-marker))))
+		(goto-char (marker-position cur-marker))
+		(pulse-momentary-highlight-region (line-beginning-position)
+																			(marker-position cur-marker)
+																			'counsel--mark-ring-highlight)))
 
 (defun counsel-nav-pre-marker ()
 	"index-- goto marker"
 	(interactive)
+	(if (not (or (eq last-command 'counsel-nav-pre-marker)
+							 (eq last-command 'counsel-nav-next-marker)))
+			(counsel-nav-push-mark))
 	(setq counsel-nav-marker-index
-				(max 0 (1- counsel-nav-marker-index)))
+				(min (1+ counsel-nav-marker-index)
+						 (1- (length counsel-nav-marker-list)) ))
 	(counsel-nav-goto-marker))
 
 (defun counsel-nav-next-marker ()
 	"index-- goto marker"
 	(interactive)
+	(if (not (or (eq last-command 'counsel-nav-pre-marker)
+							 (eq last-command 'counsel-nav-next-marker)))
+			(counsel-nav-push-mark))
 	(setq counsel-nav-marker-index
-				(min (1- (length counsel-nav-marker-list))
-						 (1+ counsel-nav-marker-index)))
+				(max 0 (1- counsel-nav-marker-index)))
 	(counsel-nav-goto-marker))
 
 (defvar counsel-nav-mark-ring-calling-buffer nil
@@ -144,5 +161,11 @@
 (global-set-key (kbd "M-,") 'counsel-nav-mark-ring)
 (global-set-key (kbd "<M-left>") 'counsel-nav-pre-marker)
 (global-set-key (kbd "<M-right>") 'counsel-nav-next-marker)
+
+(defun counsel-nav-advice (funcall where)
+	(advice-add funcall
+							where
+							#'(lambda (&rest dummy)
+									(counsel-nav-push-mark))))
 
 (provide 'counsel-navigate)

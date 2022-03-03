@@ -180,7 +180,7 @@
 (defun me-upper-p-operation ()
 	"do P operation = yank"
 	(interactive)
-	(move-previous-line-new-line)
+	(me-move-previous-line-new-line)
 	(yank))
 
 (defun me-move-beginning ()
