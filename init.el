@@ -1,3 +1,12 @@
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+;; for listen other app to openfile
+(set-default 'server-socket-dir "~/.emacs.d/server")
+(if (functionp 'window-system)
+		(server-start))
+(global-auto-revert-mode t)
+
 (show-paren-mode t)
 
 (setq-default tab-width 2)
@@ -56,6 +65,7 @@
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 (setq projectile-completion-system 'ivy)
 (global-set-key (kbd "<f12>") 'projectile-find-file)
+(setq projectile-sort-order 'access-time)
 
 (require 'auto-save)
 (auto-save-enable)

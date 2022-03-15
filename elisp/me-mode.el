@@ -216,6 +216,14 @@
 	(interactive)
 	(kill-buffer))
 
+(defun me-ctrl-alt-9-bind ()
+	"bind ctrl-alt-9 to kill all open buffers"
+	(interactive)
+	(dolist (buf (buffer-list))
+		(when (and (buffer-file-name)
+							 (not (buffer-modified-p)))
+			(kill-buffer buf))))
+
 (defun me-line-end-insert ()
 	(interactive)
 	(move-end-of-line nil)
@@ -423,6 +431,7 @@
 (define-key me-local-mode-map (kbd "3") 'me-3-bind)
 (define-key me-local-mode-map (kbd "9") 'me-9-bind)
 (define-key me-local-mode-map (kbd "C-9") 'me-ctrl-9-bind)
+(define-key me-local-mode-map (kbd "C-M-9") 'me-ctrl-alt-9-bind)
 (define-key me-local-mode-map (kbd "a") 'me-forward-char-insert)
 (define-key me-local-mode-map (kbd "A") 'me-line-end-insert)
 (define-key me-local-mode-map (kbd "b") 'backward-word)
