@@ -5,6 +5,8 @@
 	(interactive)
 	(message "dummy key"))
 
+(defvar me-mode-hook nil)
+
 (defvar me-local-mode-map
 	(make-keymap))
 
@@ -283,8 +285,7 @@
 					 (/= (point) (line-beginning-position)))
 			(backward-char))
 	(me-local-mode 1)
-	(me-add-all-advice)
-  (use-local-map me-local-mode-map))
+	(me-add-all-advice))
 
 (defun define-me-key-push (kbd-k k)
 	(define-key me-local-mode-map (kbd kbd-k) (me-push-keystrokes k)))
@@ -427,13 +428,13 @@
 (define-key me-local-mode-map (kbd "2") 'me-2-bind)
 (define-key me-local-mode-map (kbd "3") 'me-3-bind)
 (define-key me-local-mode-map (kbd "6") '(lambda ()
-																						 (interactive) 
-																						 (cpr-find (thing-at-point 'symbol' 'no-properties))))
-(define-key me-local-mode-map (kbd "C-6") '(lambda () 
+																					 (interactive) 
+																					 (cpr-find (thing-at-point 'symbol' 'no-properties))))
+(define-key me-local-mode-map (kbd "C-6") '(lambda ()
 																						 (interactive)
 																						 (swiper (thing-at-point 'symbol' 'no-properties))))
 (define-key me-local-mode-map (kbd "7") 'ivy-switch-buffer)
-(define-key me-local-mode-map (kbd "8") 'projectile-find-file)
+(define-key me-local-mode-map (kbd "8") 'gtags-find-file)
 (define-key me-local-mode-map (kbd "C-8") 'counsel-imenu)
 (define-key me-local-mode-map (kbd "9") 'me-9-bind)
 (define-key me-local-mode-map (kbd "C-9") 'me-ctrl-9-bind)

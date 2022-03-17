@@ -83,16 +83,17 @@
 (c-set-offset 'substatement-open 0)
 (c-set-offset 'access-label -2)
 
+(require 'counsel-projectile-rg)
+(require 'company-projectile-rg)
 (require 'me-mode)
 (global-set-key [escape] 'init-me-mode)
 
 (defun init-me-mode ()
 	"init me mode"
 	(interactive)
-	(me-mode-enable))
+	(me-mode-enable)
+	(keyboard-quit))
 
-(require 'counsel-projectile-rg)
-(require 'company-projectile-rg)
 (setq company-backends (list 'company-tabnine))
 (global-set-key (kbd "C-=") 'global-company-mode)
 
@@ -105,3 +106,18 @@
 (counsel-nav-advice #'xref-find-definitions :before)
 (counsel-nav-advice #'isearch-backward :before)
 (counsel-nav-advice #'isearch-forward :before)
+
+(require 'inittags)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages '(eopengrok magit lsp-java company-tabnine)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

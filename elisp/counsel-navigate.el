@@ -5,7 +5,7 @@
 (defvar counsel-nav-marker-list nil
 	"list of stored marker")
 
-(defvar counsel-nav-marker-list-max 3
+(defvar counsel-nav-marker-list-max 10
 	"max length list of stored marker")
 
 (defvar counsel-nav-marker-index 0
