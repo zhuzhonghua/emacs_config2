@@ -14,6 +14,10 @@
 (show-paren-mode t)
 
 (setq-default tab-width 2)
+(defun set-tab-width (width)
+	(interactive "nTab Width:")
+	(setq tab-width width))
+
 (setq make-backup-files nil)
 
 ;;; Title = 'system-name File: foo.bar'
@@ -90,7 +94,7 @@
 
 (defun init-me-mode ()
 	"init me mode"
-	(interactive)
+	(interactive)	
 	(me-mode-enable)
 	(keyboard-quit))
 
