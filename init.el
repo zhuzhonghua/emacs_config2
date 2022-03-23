@@ -96,6 +96,9 @@
 	"init me mode"
 	(interactive)	
 	(me-mode-enable)
+	;; close company if it is open
+	(if company-mode
+			(company-abort))
 	(keyboard-quit))
 
 (setq company-backends (list 'company-tabnine))
