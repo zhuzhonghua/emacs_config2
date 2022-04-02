@@ -195,14 +195,28 @@
 (defun me-2-bind ()
 	"bind 2 to c-x 2"
 	(interactive)
-	(split-window-below)
-	(other-window 1))
+	(split-window-below))
 
 (defun me-3-bind ()
 	"bind 3 to c-x 3"
 	(interactive)
-	(split-window-right)
-	(other-window 1))
+	(split-window-right))
+
+(defun me-6-bind ()
+	"bind 6 to grep files"
+	(interactive)
+	(cpr-find (thing-at-point 'symbol' 'no-properties)))
+
+(defun me-ctrl-6-bind ()
+	"bind ctrl-6 to swiper"
+	(interactive)
+	(swiper (thing-at-point 'symbol' 'no-properties)))
+
+(defun me-8-bind () 
+	"bind 8 to find files in project"
+	(interactive)
+	(inittags-init-root)
+	(gtags-find-file))
 
 (defun me-9-bind ()
 	"bind 9 to c-x 0"
@@ -391,6 +405,30 @@
 	(if (equal ?\( (char-after (point)))
 			(forward-sexp)))
 
+(defun me-middle-left-bracket-bind ()
+	"when press ["
+	(interactive)
+	(if (equal ?\] (char-before (point)))
+			(backward-sexp)))
+
+(defun me-middle-right-bracket-bind ()
+	"when press ]"
+	(interactive)
+	(if (equal ?\[ (char-after (point)))
+			(forward-sexp)))
+
+(defun me-big-left-bracket-bind ()
+	"when press {"
+	(interactive)
+	(if (equal ?\} (char-before (point)))
+			(backward-sexp)))
+
+(defun me-big-right-bracket-bind ()
+	"when press }"
+	(interactive)
+	(if (equal ?\{ (char-after (point)))
+			(forward-sexp)))
+
 (defun me-return-bind ()
 	"when press return"
 	(interactive)
@@ -427,14 +465,10 @@
 (define-key me-local-mode-map (kbd "1") 'me-1-bind)
 (define-key me-local-mode-map (kbd "2") 'me-2-bind)
 (define-key me-local-mode-map (kbd "3") 'me-3-bind)
-(define-key me-local-mode-map (kbd "6") '(lambda ()
-																					 (interactive) 
-																					 (cpr-find (thing-at-point 'symbol' 'no-properties))))
-(define-key me-local-mode-map (kbd "C-6") '(lambda ()
-																						 (interactive)
-																						 (swiper (thing-at-point 'symbol' 'no-properties))))
+(define-key me-local-mode-map (kbd "6") 'me-6-bind)
+(define-key me-local-mode-map (kbd "C-6") 'me-ctrl-6-bind)
 (define-key me-local-mode-map (kbd "7") 'ivy-switch-buffer)
-(define-key me-local-mode-map (kbd "8") 'gtags-find-file)
+(define-key me-local-mode-map (kbd "8") 'me-8-bind)
 (define-key me-local-mode-map (kbd "C-8") 'counsel-imenu)
 (define-key me-local-mode-map (kbd "9") 'me-9-bind)
 (define-key me-local-mode-map (kbd "C-9") 'me-ctrl-9-bind)
@@ -467,10 +501,10 @@
 (define-key me-local-mode-map (kbd "$") 'move-end-of-line)
 (define-key me-local-mode-map (kbd "(") 'me-left-bracket-bind)
 (define-key me-local-mode-map (kbd ")") 'me-right-bracket-bind)
-(define-key me-local-mode-map (kbd "[") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "{") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "]") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "}") 'me-dummy-bind)
+(define-key me-local-mode-map (kbd "[") 'me-middle-left-bracket-bind)
+(define-key me-local-mode-map (kbd "]") 'me-middle-right-bracket-bind)
+(define-key me-local-mode-map (kbd "{") 'me-big-left-bracket-bind)
+(define-key me-local-mode-map (kbd "}") 'me-big-right-bracket-bind)
 (define-key me-local-mode-map (kbd "RET") 'me-return-bind)
 (define-key me-local-mode-map (kbd "-") 'me---bind)
 (define-key me-local-mode-map (kbd "DEL") 'me-backspace-bind)

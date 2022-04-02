@@ -66,14 +66,6 @@
 (define-key ivy-occur-mode-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
 
-
-(require 'projectile)
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-(setq projectile-completion-system 'ivy)
-(setq projectile-sort-order 'access-time)
-(setq projectile-indexing-method 'hybrid projectile-enable-caching t)
-
 (require 'auto-save)
 (auto-save-enable)
 (setq auto-save-slient t)
@@ -83,9 +75,11 @@
 (setq company-idle-delay 0)
 
 ;; 设置C++
+;; C-c C-o
 (setq c-default-style "gnu")
 (c-set-offset 'substatement-open 0)
 (c-set-offset 'access-label -2)
+(c-set-offset 'topmost-intro-cont -2)
 
 (require 'counsel-projectile-rg)
 (require 'company-projectile-rg)
@@ -99,6 +93,8 @@
 	;; close company if it is open
 	(if company-mode
 			(company-abort))
+	(if ivy-mode
+			(minibuffer-keyboard-quit))
 	(keyboard-quit))
 
 (setq company-backends (list 'company-tabnine))
@@ -116,13 +112,15 @@
 
 (require 'inittags)
 (require 'initneotree)
+(require 'initprojectile)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(neotree eopengrok magit lsp-java company-tabnine)))
+ '(package-selected-packages
+	 '(clojure-mode neotree eopengrok magit lsp-java company-tabnine)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
