@@ -7,6 +7,6 @@
 (setq projectile-sort-order 'access-time)
 (setq projectile-indexing-method 'native projectile-enable-caching nil)
 
-(setq projectile-switch-project-action 'me-8-bind)
+(setq projectile-switch-project-action 'counsel-projectile-fd-file-jump)
 
 (provide 'initprojectile)

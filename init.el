@@ -81,7 +81,8 @@
 (c-set-offset 'access-label -2)
 (c-set-offset 'topmost-intro-cont -2)
 
-(require 'counsel-projectile-rg)
+
+(require 'counsel-projectile)
 (require 'company-projectile-rg)
 (require 'me-mode)
 (global-set-key [escape] 'init-me-mode)
@@ -113,6 +114,7 @@
 (require 'inittags)
 (require 'initneotree)
 (require 'initprojectile)
+(require 'initgdb)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -120,7 +122,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-	 '(clojure-mode neotree eopengrok magit lsp-java company-tabnine)))
+	 '(counsel-fd clojure-mode neotree eopengrok magit lsp-java company-tabnine)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -212,11 +212,15 @@
 	(interactive)
 	(swiper (thing-at-point 'symbol' 'no-properties)))
 
+(defun me-ctrl-alt-6-bind ()
+	"bind ctrl-alt-6 to find in current directory"
+	(interactive)
+	(counsel-rg (thing-at-point 'symbol' 'no-properties)))
+
 (defun me-8-bind () 
 	"bind 8 to find files in project"
 	(interactive)
-	(inittags-init-root)
-	(gtags-find-file))
+	(counsel-projectile-fd-file-jump))
 
 (defun me-9-bind ()
 	"bind 9 to c-x 0"
@@ -459,6 +463,87 @@
 						 (eq ?\n (char-before (point))))
 		(backward-delete-char 1 nil)))
 
+(defun me-insert-delete-string-rectangle (begin-pos end-pos str)
+	"use elisp func string-rectangle"
+	(save-excursion
+		(goto-char begin-pos)
+		(move-beginning-of-line nil)
+		(let ((start (point))
+					(end (progn (goto-char end-pos)
+											(move-beginning-of-line nil)
+											(+ 2 (point)))))
+			(if (string= str (buffer-substring-no-properties start (+ 2 start)))
+					(string-rectangle start end "  ")
+				(string-rectangle start end str)))))
+
+(defun me-ctrl-left-slash-bind-rect ()
+	(interactive)
+	(cond (mark-active
+				 (me-insert-delete-string-rectangle (region-beginning) (region-end) "//"))
+				(me-line-selection-overlay
+				 (me-insert-delete-string-rectangle me-visual-begin-pos me-visual-end-pos "//"))
+				(t
+				 (me-insert-delete-string-rectangle (line-beginning-position) (line-end-position) "//"))))
+
+(defun me-insert-delete-char-at-beginning (begin-pos end-pos c)
+	"insert or delete c at beginning of every line"
+	(when (<= begin-pos end-pos)
+		(save-excursion
+			(goto-char begin-pos)
+			(let ((line-nums '())
+						(delete 0)
+						(insert 0))
+				;; get all line numbers
+				;; line number won't change
+				;; position will change
+				(add-to-list 'line-nums (line-number-at-pos (point)) t)
+				;; dynamically check insert or delete
+				(move-beginning-of-line nil)
+				(if (eq c (char-after (point)))
+						(setq delete (1+ delete))
+					(setq insert (1+ insert)))
+				
+				(while (< (line-number-at-pos (point))
+									(line-number-at-pos end-pos))
+					(next-line)
+					(move-beginning-of-line nil)	
+					(if (eq c (char-after (point)))
+							(setq delete (1+ delete))
+						(setq insert (1+ insert)))	
+					(add-to-list 'line-nums (line-number-at-pos (point)) t))
+				
+				(message "lines %S" line-nums)
+				
+				(dolist (line line-nums)
+					(goto-line line)
+					(move-beginning-of-line nil)	
+					(if (> delete insert)
+							(progn
+								(delete-char 1 nil)	
+								(when (eq c (char-after (point)))
+										(delete-char 1 nil)))
+						(self-insert-command 2 c)))))
+		(me-advice-clear-everything)))
+
+(defun me-insert-delete-char-region (c)
+	"insert or delete c at region"
+	(cond (mark-active
+				 (me-insert-delete-char-at-beginning (region-beginning) (region-end) c))
+				(me-line-selection-overlay
+				 (me-insert-delete-char-at-beginning me-visual-begin-pos me-visual-end-pos c))
+				(t
+				 (me-insert-delete-char-at-beginning (line-beginning-position) (line-end-position) c))))
+
+(defun me-ctrl-left-slash-bind ()
+	"comment or uncomment"
+	(interactive)
+	(me-insert-delete-char-region ?/))
+
+(defun me-ctrl-left-comma-bind ()
+	"comment or uncomment"
+	(interactive)
+	(me-insert-delete-char-region ?\;))
+
 ;; implemented command
 (define-key me-local-mode-map [escape] 'keyboard-quit)
 (define-key me-local-mode-map (kbd "0") 'me-move-beginning)
@@ -467,6 +552,7 @@
 (define-key me-local-mode-map (kbd "3") 'me-3-bind)
 (define-key me-local-mode-map (kbd "6") 'me-6-bind)
 (define-key me-local-mode-map (kbd "C-6") 'me-ctrl-6-bind)
+(define-key me-local-mode-map (kbd "C-M-6") 'me-ctrl-alt-6-bind)
 (define-key me-local-mode-map (kbd "7") 'ivy-switch-buffer)
 (define-key me-local-mode-map (kbd "8") 'me-8-bind)
 (define-key me-local-mode-map (kbd "C-8") 'counsel-imenu)
@@ -509,6 +595,8 @@
 (define-key me-local-mode-map (kbd "-") 'me---bind)
 (define-key me-local-mode-map (kbd "DEL") 'me-backspace-bind)
 (define-key me-local-mode-map (kbd ";") 'recenter-top-bottom)
+(define-key me-local-mode-map (kbd "C-;") 'me-ctrl-left-comma-bind)
+(define-key me-local-mode-map (kbd "C-/") 'me-ctrl-left-slash-bind)
 
 ;; ignore command
 (define-key me-local-mode-map (kbd "4") 'me-dummy-bind)
