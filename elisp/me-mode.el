@@ -487,43 +487,25 @@
 
 (defun me-insert-delete-char-at-beginning (begin-pos end-pos c)
 	"insert or delete c at beginning of every line"
-	(when (<= begin-pos end-pos)
-		(save-excursion
-			(goto-char begin-pos)
-			(let ((line-nums '())
-						(delete 0)
-						(insert 0))
-				;; get all line numbers
-				;; line number won't change
-				;; position will change
-				(add-to-list 'line-nums (line-number-at-pos (point)) t)
-				;; dynamically check insert or delete
+	(save-excursion
+		(goto-char begin-pos)
+		(move-beginning-of-line nil)
+		(let ((line-num-begin (line-number-at-pos begin-pos))
+					(line-num-end (line-number-at-pos end-pos))
+					(delete (eq c (char-after (point)))))
+			(while (<= line-num-begin line-num-end)
+				;; set delete for insert flag base on first line
+				(if delete
+						(progn
+							(delete-char 1 nil)
+							;; for case beginning don't have 2 ?c
+							(when (eq c (char-after (point)))
+								(delete-char 1 nil)))
+					(self-insert-command 2 c))
+				(next-line)
 				(move-beginning-of-line nil)
-				(if (eq c (char-after (point)))
-						(setq delete (1+ delete))
-					(setq insert (1+ insert)))
-				
-				(while (< (line-number-at-pos (point))
-									(line-number-at-pos end-pos))
-					(next-line)
-					(move-beginning-of-line nil)	
-					(if (eq c (char-after (point)))
-							(setq delete (1+ delete))
-						(setq insert (1+ insert)))	
-					(add-to-list 'line-nums (line-number-at-pos (point)) t))
-				
-				(message "lines %S" line-nums)
-				
-				(dolist (line line-nums)
-					(goto-line line)
-					(move-beginning-of-line nil)	
-					(if (> delete insert)
-							(progn
-								(delete-char 1 nil)	
-								(when (eq c (char-after (point)))
-										(delete-char 1 nil)))
-						(self-insert-command 2 c)))))
-		(me-advice-clear-everything)))
+				(setq line-num-begin (1+ line-num-begin)))))
+	(me-advice-clear-everything))
 
 (defun me-insert-delete-char-region (c)
 	"insert or delete c at region"
