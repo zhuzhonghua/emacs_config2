@@ -23,7 +23,7 @@
 ;;; Title = 'system-name File: foo.bar'
 ;;(setq frame-title-format '("" system-name "  File: "(:eval (frame-title-string))))
 
-(set-face-attribute 'default nil :font "Consolas 18")
+(set-face-attribute 'default nil :font "Consolas 16")
 (dolist (charset '(kana han symbol cjk-misc bopomofo))
               (set-fontset-font (frame-parameter nil 'font)
                             charset
@@ -74,14 +74,6 @@
 (require 'company-tabnine)
 (setq company-idle-delay 0)
 
-;; 设置C++
-;; C-c C-o
-(setq c-default-style "gnu")
-(c-set-offset 'substatement-open 0)
-(c-set-offset 'access-label -2)
-(c-set-offset 'topmost-intro-cont -2)
-
-
 (require 'counsel-projectile)
 (require 'company-projectile-rg)
 (require 'me-mode)
@@ -102,7 +94,7 @@
 (global-set-key (kbd "C-=") 'global-company-mode)
 
 (require 'counsel-navigate)
-(counsel-nav-advice #'cpr-find :before)
+(counsel-nav-advice #'counsel-projectile-find :before)
 (counsel-nav-advice #'swiper :before)
 (counsel-nav-advice #'counsel-imenu :before)
 (counsel-nav-advice #'ivy-switch-buffer :before)
@@ -115,6 +107,10 @@
 (require 'initneotree)
 (require 'initprojectile)
 (require 'initgdb)
+(require 'initcolorrg)
+(require 'initjava)
+(require 'initc++)
+(require 'initisearch)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

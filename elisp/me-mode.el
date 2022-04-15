@@ -181,11 +181,17 @@
 	(me-move-previous-line-new-line)
 	(yank))
 
-(defun me-move-beginning ()
+(defun me-ctrl-0-bind ()
 	"move beginning and tab"
 	(interactive)
 	(move-beginning-of-line nil)
-	(indent-for-tab-command))
+	(indent-for-tab-command)
+	(me-advice-clear-everything))
+
+(defun me-0-bind ()
+	"move beginning"
+	(interactive)
+	(move-beginning-of-line nil))
 
 (defun me-1-bind ()
 	"bind 1 to c-x 1"
@@ -205,7 +211,7 @@
 (defun me-6-bind ()
 	"bind 6 to grep files"
 	(interactive)
-	(cpr-find (thing-at-point 'symbol' 'no-properties)))
+	(counsel-projectile-find (thing-at-point 'symbol' 'no-properties)))
 
 (defun me-ctrl-6-bind ()
 	"bind ctrl-6 to swiper"
@@ -436,8 +442,10 @@
 (defun me-return-bind ()
 	"when press return"
 	(interactive)
-	(if (and (equal ?\} (char-after (point)))
-					 (equal ?\{ (char-before (point))))
+	(if (or (and (equal ?\} (char-after (point)))
+							 (equal ?\{ (char-before (point))))
+					(and (equal ?\* (char-after (point)))
+							 (equal ?\* (char-before (point)))))
 			(progn
 				(newline)
 				(indent-for-tab-command)
@@ -528,7 +536,8 @@
 
 ;; implemented command
 (define-key me-local-mode-map [escape] 'keyboard-quit)
-(define-key me-local-mode-map (kbd "0") 'me-move-beginning)
+(define-key me-local-mode-map (kbd "0") 'me-0-bind)
+(define-key me-local-mode-map (kbd "C-0") 'me-ctrl-0-bind)
 (define-key me-local-mode-map (kbd "1") 'me-1-bind)
 (define-key me-local-mode-map (kbd "2") 'me-2-bind)
 (define-key me-local-mode-map (kbd "3") 'me-3-bind)
@@ -547,6 +556,8 @@
 (define-key me-local-mode-map (kbd "c") 'me-c-bind)
 (define-key me-local-mode-map (kbd "d") 'me-d-bind)
 (define-key me-local-mode-map (kbd "e") 'move-end-of-line)
+(define-key me-local-mode-map (kbd "f") 'scroll-up-command)
+(define-key me-local-mode-map (kbd "F") 'scroll-down-command)
 (define-key me-local-mode-map (kbd "h") 'backward-char)
 (define-key me-local-mode-map (kbd "i") 'me-mode-disable)
 (define-key me-local-mode-map (kbd "j") 'next-line)
@@ -557,6 +568,7 @@
 (define-key me-local-mode-map (kbd "p") 'me-p-bind)
 (define-key me-local-mode-map (kbd "P") 'me-upper-p-operation)
 (define-key me-local-mode-map (kbd "r") 'me-r-bind)
+(define-key me-local-mode-map (kbd "s") 'isearch-forward)
 (define-key me-local-mode-map (kbd "v") 'me-v-bind)
 (define-key me-local-mode-map (kbd "V") 'me-make-line-visual-selection)
 (define-key me-local-mode-map (kbd "w") 'me-w-bind)
@@ -587,8 +599,6 @@
 (define-key me-local-mode-map (kbd "C") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "D") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "E") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "f") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "F") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "g") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "G") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "H") 'me-dummy-bind)
@@ -603,7 +613,6 @@
 (define-key me-local-mode-map (kbd "q") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "Q") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "R") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "s") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "S") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "t") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "T") 'me-dummy-bind)
