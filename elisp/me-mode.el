@@ -354,7 +354,9 @@
 				(move-end-of-line nil)
 				(newline)
 				(move-beginning-of-line nil)))
-	(yank))
+	(yank)
+	(move-end-of-line nil)	
+	(me-backspace-bind))
 
 (defun me-esc-bind ()
 	"when press esc"
