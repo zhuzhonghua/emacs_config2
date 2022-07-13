@@ -46,6 +46,7 @@
 
 (global-set-key (kbd "C-x e") 'eval-last-sexp)
 (add-to-list 'load-path "~/.emacs.d/elisp")
+(add-to-list 'load-path "~/.emacs.d/third")
 
 (defun smooth-scroll (increment)
   (scroll-up increment) (sit-for 0.01)
@@ -65,10 +66,6 @@
 (setq enable-recursive-minibuffers t)
 (define-key ivy-occur-mode-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-
-(require 'auto-save)
-(auto-save-enable)
-(setq auto-save-slient t)
 
 (require 'company)
 (require 'company-tabnine)
@@ -111,6 +108,9 @@
 (require 'initjava)
 (require 'initc++)
 (require 'initisearch)
+(require 'inittabbar)
+(require 'initautosave)
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -118,7 +118,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-	 '(counsel-fd clojure-mode neotree eopengrok magit lsp-java company-tabnine)))
+	 '(eglot counsel-fd clojure-mode neotree eopengrok magit lsp-java company-tabnine)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

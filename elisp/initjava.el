@@ -10,4 +10,8 @@
 (add-hook 'java-mode-hook 'java-indent)
 (add-hook 'java-mode-hook 'java-style)
 
+(with-eval-after-load 'lsp-mode
+  (require 'lsp-intellij)
+  (add-hook 'java-mode-hook #'lsp-intellij-enable))
+
 (provide 'initjava)

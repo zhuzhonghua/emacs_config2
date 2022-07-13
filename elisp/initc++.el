@@ -14,4 +14,6 @@
 
 (add-hook 'c++-mode-hook 'c++-style)
 
+(global-set-key (kbd "C-<f5>") 'counsel-compile)
+
 (provide 'initc++)

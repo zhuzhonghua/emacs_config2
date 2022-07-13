@@ -13,7 +13,7 @@
 (define-minor-mode me-local-mode
 	"simplified vim minor mode"
 	:init-value nil
-	:global 1
+;;	:global 1
 	:lighter " me"
 	:keymap me-local-mode-map)
 
@@ -236,7 +236,9 @@
 (defun me-ctrl-9-bind ()
 	"bind ctrl-9 to c-x k"
 	(interactive)
-	(kill-buffer))
+	(kill-buffer)
+	(if tab-bar-mode
+			(tab-bar-close-tab)))
 
 (defun me-ctrl-alt-9-bind ()
 	"bind ctrl-alt-9 to kill all open buffers"
@@ -258,9 +260,10 @@
 	(indent-for-tab-command)
 	(me-mode-disable))
 
-(defun me-forward-char-insert ()
+(defun me-a-bind ()
 	(interactive)
-	(forward-char)
+	(when (/= (point) (line-end-position))
+		(forward-char))
 	(me-mode-disable))
 
 (defun me-move-previous-line-new-line ()
@@ -306,7 +309,16 @@
 	"auto enable my evil mode when evil mode"
 	(interactive)	
 	(if (and (not (bound-and-true-p me-local-mode))
-					 (/= (point) (line-beginning-position)))
+					 (/= (point) (line-beginning-position))
+					 (or (equal ?\) (char-before (point)))
+							 (equal ?\} (char-before (point)))
+							 (equal ?\" (char-before (point)))
+							 (equal ?\/ (char-before (point)))
+							 (equal ?\* (char-before (point)))
+							 (equal ?\; (char-before (point)))
+							 (equal ?\> (char-before (point)))
+							 (equal ?\] (char-before (point)))
+							 (equal ?\' (char-before (point)))))
 			(backward-char))
 	(me-local-mode 1)
 	(me-add-all-advice))
@@ -317,15 +329,15 @@
 (defun me-w-bind ()
 	"when press w"
 	(interactive)
-	(cond ((null (car me-pre-keystrokes))
-				 (forward-word))
-				((eq 'd (car me-pre-keystrokes))
+	(cond ((eq 'd (car me-pre-keystrokes))
 				 (me-trigger-dw)
 				 (me-advice-clear-everything))
 				((eq 'c (car me-pre-keystrokes))
 				 (me-trigger-dw)
 				 (me-advice-clear-everything)
-				 (me-mode-disable))))
+				 (me-mode-disable))
+				(t
+				 (forward-word))))
 
 (defun me-y-bind ()
 	"when press y"
@@ -354,9 +366,7 @@
 				(move-end-of-line nil)
 				(newline)
 				(move-beginning-of-line nil)))
-	(yank)
-	(move-end-of-line nil)	
-	(me-backspace-bind))
+	(yank))
 
 (defun me-esc-bind ()
 	"when press esc"
@@ -398,6 +408,14 @@
 					(message "new paste line set t")
 					(setq me-pre-keystrokes '())	
 					(setq me-paste-new-line t)))))
+
+(defun me-e-bind ()
+	"when press e"
+	(interactive)
+	(move-end-of-line nil)
+	(unless (or mark-active
+							me-line-selection-overlay)
+		(me-backspace-bind t)))
 
 (defun me-v-bind ()
 	"when press v"
@@ -464,14 +482,18 @@
 	(me-x-bind)
 	(me-mode-disable))
 
-(defun me-backspace-bind ()
+(defun me-backspace-bind (soft)
 	"when press backspace"
-	(interactive)
-	(while (or (eq ?  (char-before (point)))
-						 (eq ?\t (char-before (point)))
-						 (eq ?\r (char-before (point)))
-						 (eq ?\n (char-before (point))))
-		(backward-delete-char 1 nil)))
+	(interactive "P")
+	(let ((flag nil))
+		(while (or (eq ?  (char-before (point)))
+							 (eq ?\t (char-before (point)))
+							 (eq ?\r (char-before (point)))
+							 (eq ?\n (char-before (point))))
+			(setq flag 1)
+			(backward-delete-char 1 nil))
+		(unless (or flag soft)
+			(backward-delete-char 1 nil))))
 
 (defun me-insert-delete-string-rectangle (begin-pos end-pos str)
 	"use elisp func string-rectangle"
@@ -552,12 +574,12 @@
 (define-key me-local-mode-map (kbd "9") 'me-9-bind)
 (define-key me-local-mode-map (kbd "C-9") 'me-ctrl-9-bind)
 (define-key me-local-mode-map (kbd "C-M-9") 'me-ctrl-alt-9-bind)
-(define-key me-local-mode-map (kbd "a") 'me-forward-char-insert)
+(define-key me-local-mode-map (kbd "a") 'me-a-bind)
 (define-key me-local-mode-map (kbd "A") 'me-line-end-insert)
 (define-key me-local-mode-map (kbd "b") 'backward-word)
 (define-key me-local-mode-map (kbd "c") 'me-c-bind)
 (define-key me-local-mode-map (kbd "d") 'me-d-bind)
-(define-key me-local-mode-map (kbd "e") 'move-end-of-line)
+(define-key me-local-mode-map (kbd "e") 'me-e-bind)
 (define-key me-local-mode-map (kbd "f") 'scroll-up-command)
 (define-key me-local-mode-map (kbd "F") 'scroll-down-command)
 (define-key me-local-mode-map (kbd "h") 'backward-char)
@@ -571,6 +593,9 @@
 (define-key me-local-mode-map (kbd "P") 'me-upper-p-operation)
 (define-key me-local-mode-map (kbd "r") 'me-r-bind)
 (define-key me-local-mode-map (kbd "s") 'isearch-forward)
+(defvar me-tab-prefix-map (make-sparse-keymap)
+  "Keymap for tab-bar related commands.")
+(define-key me-local-mode-map "t" me-tab-prefix-map)
 (define-key me-local-mode-map (kbd "v") 'me-v-bind)
 (define-key me-local-mode-map (kbd "V") 'me-make-line-visual-selection)
 (define-key me-local-mode-map (kbd "w") 'me-w-bind)
@@ -616,7 +641,6 @@
 (define-key me-local-mode-map (kbd "Q") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "R") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "S") 'me-dummy-bind)
-(define-key me-local-mode-map (kbd "t") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "T") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "U") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "X") 'me-dummy-bind)
@@ -639,9 +663,10 @@
 (define-key me-local-mode-map (kbd "|") 'me-dummy-bind)
 (define-key me-local-mode-map (kbd "#") 'me-dummy-bind)
 
+
 ;;(global-set-key (kbd "M-i") 'me-mode)
 
-(add-hook 'minibuffer-setup-hook 'me-mode-disable)
-(add-hook 'minibuffer-exit-hook 'me-mode-enable)
+;;(add-hook 'minibuffer-setup-hook 'me-mode-disable)
+;;(add-hook 'minibuffer-exit-hook 'me-mode-enable)
 
 (provide 'me-mode)
